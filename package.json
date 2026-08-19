@@ -1,0 +1,22 @@
+{
+  "name": "quickfile-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Quickfile REST API v2 (multi-account, secret-isolated)",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "quickfile-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsc && node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "typescript": "^5.5.0"
+  }
+}

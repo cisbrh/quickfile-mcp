@@ -1,0 +1,18 @@
+{
+  "defaultAccount": "acme",
+  "accounts": [
+    {
+      "id": "acme",
+      "label": "acme",
+      "type": "static",
+      "token": "your_personal_bearer_token_here"
+    },
+    {
+      "id": "beta",
+      "label": "beta",
+      "type": "oauth",
+      "clientId": "your_client_id",
+      "clientSecret": "your_client_secret"
+    }
+  ]
+}
