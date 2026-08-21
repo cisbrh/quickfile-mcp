@@ -1,0 +1,49 @@
+{
+  "manifest_version": "0.3",
+  "name": "quickfile-mcp",
+  "display_name": "Quickfile MCP",
+  "version": "0.1.7",
+  "description": "Multi-account Quickfile accounting API access for Claude (invoicing, clients, suppliers, bank, reports).",
+  "long_description": "Connects Claude to the Quickfile REST API v2. Supports multiple Quickfile accounts/companies. Provides 75 tools covering invoices, clients, suppliers, purchases, bank transactions, ledgers, journals, reports, projects, documents and inventory. Secrets stay in the OS keychain — never exposed to the AI agent.",
+  "author": {
+    "name": "cisbrh",
+    "url": "https://github.com/cisbrh/quickfile-mcp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cisbrh/quickfile-mcp.git"
+  },
+  "homepage": "https://github.com/cisbrh/quickfile-mcp",
+  "support": "https://github.com/cisbrh/quickfile-mcp/issues",
+  "license": "MIT",
+  "tools_generated": true,
+  "keywords": ["quickfile", "accounting", "invoices", "banking", "uk", "api"],
+  "privacy_policies": ["https://www.quickfile.co.uk/privacy"],
+  "compatibility": {
+    "claude_desktop": ">=1.0.0",
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.js"],
+      "env": {
+        "QF_ACCOUNTS_CONFIG": "${user_config.accounts_config}"
+      }
+    }
+  },
+  "user_config": {
+    "accounts_config": {
+      "type": "string",
+      "title": "Accounts (JSON)",
+      "description": "Paste your accounts config JSON. Example: {\"defaultAccount\":\"importair\",\"accounts\":[{\"id\":\"importair\",\"label\":\"Import Air\",\"type\":\"static\",\"token\":\"YOUR_TOKEN\"}]}. For OAuth accounts add \"type\":\"oauth\",\"clientId\":\"...\",\"clientSecret\":\"...\" (token material is managed automatically).",
+      "sensitive": true,
+      "required": true
+    }
+  }
+}

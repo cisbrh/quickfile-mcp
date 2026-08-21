@@ -2,6 +2,9 @@ node_modules/
 dist/
 accounts.json
 tokens.json
+mcpb-build/
+*.mcpb
+MANIFEST.ref.md
 *.log
 .dirac-cache/
 docs/

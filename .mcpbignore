@@ -1,0 +1,5 @@
+node_modules/typescript
+node_modules/@types
+*.map
+MANIFEST.ref.md
+mcpb-build

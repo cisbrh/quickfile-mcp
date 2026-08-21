@@ -1,10 +1,13 @@
 /**
- * config.ts — load accounts from accounts.json (gitignored).
- * One block per account. OAuth token material (accessToken, refreshToken,
- * expiresAt) is stored separately in tokens.json (also gitignored, internal —
- * the end user never edits it; auth.ts manages it via refresh).
+ * config.ts — load accounts from one of two sources (in priority order):
+ *   1. QF_ACCOUNTS_CONFIG env var — a JSON string (MCPB mode: injected from
+ *      the user_config "accounts_config" field, stored in OS keychain).
+ *   2. accounts.json file — dev mode fallback.
+ * OAuth token material (accessToken, refreshToken, expiresAt) is stored
+ * separately in tokens.json (also gitignored, internal — auth.ts manages it
+ * via refresh; MCPB cannot write back to the keychain).
  *
- * accounts.json shape:
+ * Accounts JSON shape (same for both sources):
  * {
  *   "defaultAccount": "acme",
  *   "accounts": [
@@ -57,14 +60,21 @@ export function loadAccounts(): {
   accounts: Map<string, AccountConfig>;
   defaultAccount: string;
 } {
-  const filePath = accountsFilePath();
+  // Source 1: MCPB-injected env var (JSON string from user_config keychain).
+  // Source 2: accounts.json file (dev fallback).
   let raw: string;
-  try {
-    raw = readFileSync(filePath, "utf-8");
-  } catch {
-    throw new Error(
-      `Cannot read ${filePath}. Copy accounts.example.json to accounts.json and fill in credentials.`,
-    );
+  const envConfig = process.env.QF_ACCOUNTS_CONFIG;
+  if (envConfig && envConfig.trim()) {
+    raw = envConfig;
+  } else {
+    const filePath = accountsFilePath();
+    try {
+      raw = readFileSync(filePath, "utf-8");
+    } catch {
+      throw new Error(
+        `No accounts config. Either set QF_ACCOUNTS_CONFIG env var (JSON string) or create ${filePath}. See accounts.example.json.`,
+      );
+    }
   }
 
   const data = JSON.parse(raw) as {
@@ -114,10 +124,16 @@ export function loadAccounts(): {
     }
   }
 
-  const defaultAccount = data.defaultAccount || data.accounts[0].label as string;
+  const defaultRaw = data.defaultAccount || (data.accounts[0].label as string);
+  // Match defaultAccount against either id or label — user may use either.
+  let defaultAccount = defaultRaw;
+  if (!accounts.has(defaultAccount)) {
+    const byId = Array.from(accounts.values()).find((a) => a.id === defaultRaw);
+    if (byId) defaultAccount = byId.label;
+  }
   if (!accounts.has(defaultAccount)) {
     throw new Error(
-      `defaultAccount='${defaultAccount}' not found. Available: ${Array.from(accounts.keys()).join(", ")}`,
+      `defaultAccount='${defaultRaw}' not found. Available: ${Array.from(accounts.values()).map((a) => `${a.id} (${a.label})`).join(", ")}`,
     );
   }
 

@@ -11,6 +11,19 @@ MCP server for the [Quickfile REST API v2](https://api-beta.quickfile.co.uk/api-
 
 ## Setup
 
+### Option A: Claude Desktop Extension (.mcpb) — one-click install
+
+1. Build and pack: `npm install && npm run build && npm install -g @anthropic-ai/mcpb && mcpb pack mcpb-build`
+2. Open the resulting `mcpb-build.mcpb` file with Claude Desktop.
+3. Claude prompts for **Accounts (JSON)** — paste your accounts config:
+   ```json
+   {"defaultAccount":"importair","accounts":[{"id":"importair","label":"Import Air","type":"static","token":"YOUR_TOKEN"}]}
+   ```
+   Stored in the OS keychain. Never written to disk, never exposed to the agent.
+4. Click Install. Done.
+
+### Option B: Manual (dev / non-Claude clients)
+
 1. `npm install`
 2. `cp accounts.example.json accounts.json` and fill in account credentials.
 3. `npm run build`
@@ -28,7 +41,7 @@ MCP server for the [Quickfile REST API v2](https://api-beta.quickfile.co.uk/api-
 }
 ```
 
-The server reads `accounts.json` from the working directory (or `QF_ACCOUNTS_FILE` env var for a custom path). OAuth token material (`accessToken`, `refreshToken`, `expiresAt`) lives in a separate internal `tokens.json` (or `QF_TOKENS_FILE`) that the server manages — you never edit it by hand.
+The server reads accounts from `QF_ACCOUNTS_CONFIG` env var (JSON string — used by the `.mcpb` path) if set, otherwise from `accounts.json` in the working directory (or `QF_ACCOUNTS_FILE` for a custom path). OAuth token material (`accessToken`, `refreshToken`, `expiresAt`) lives in a separate internal `tokens.json` (or `QF_TOKENS_FILE`) that the server manages — you never edit it by hand.
 
 ## Authentication
 
